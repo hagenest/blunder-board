@@ -1,1 +1,1 @@
-# blunder-board
+# blunderboard
