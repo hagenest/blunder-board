@@ -25,26 +25,49 @@ func main() {
 	}
 
 	game := chess.NewGame()
+	prevprev_winning_chance := 0.0
+	prev_winning_chance := 0.0
 	for game.Outcome() == chess.NoOutcome {
 		if err := engine.Run(uci.CmdPosition{Position: game.Position()}, uci.CmdGo{Depth: 12}); err != nil {
 			panic(err)
 		}
 		search_results := engine.SearchResults()
-		fmt.Println("Best Move: ", search_results.BestMove)
 		cp := search_results.Info.Score.CP
-		fmt.Println("Score (centipawns): ", cp)
 		winning_chance := WinningChance(cp)
-		fmt.Println("Winning chance: ", winning_chance)
-		fmt.Println(game.Position().Board().Draw())
-		for {
-			var move string
-			fmt.Print("Move: ")
-			fmt.Scanln(&move)
-			if err := game.MoveStr(move); err == nil {
-				break
+		num_of_moves := len(game.Moves())
+		if (num_of_moves > 0) {
+			delta := prevprev_winning_chance - winning_chance
+			if (num_of_moves % 2 == 0) {
+				delta *= -1;
 			}
-			fmt.Println("Illegal move!")
+			if delta > 0.3 {
+				fmt.Print("B-b-b-blunder!!")
+			} else if delta > 0.2 {
+				fmt.Print("That was a mistake.")
+			} else if delta > 0.1 {
+				fmt.Print("Meh...")
+			} else {
+				fmt.Print("Ok")
+			}
+			fmt.Printf(" (%0.2f)\n", -delta)
 		}
+		prevprev_winning_chance = prev_winning_chance
+		prev_winning_chance = winning_chance
+		fmt.Println(game.Position().Board().Draw())
+		fmt.Println("Score (centipawns):", cp, "Winning chance:", winning_chance, "Best Move: ", search_results.BestMove)
+		fmt.Println("Move: ", search_results.BestMove)
+		if err := game.Move(search_results.BestMove); err != nil {
+			panic(err)
+		}
+//		for {
+//			var move string
+//			fmt.Print("Move: ")
+//			fmt.Scanln(&move)
+//			if err := game.MoveStr(move); err == nil {
+//				break
+//			}
+//			fmt.Println("Illegal move!")
+//		}
 	}
 	fmt.Println(game.Outcome())
 	fmt.Println(game.Position().Board().Draw())
