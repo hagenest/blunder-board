@@ -37,18 +37,21 @@ func main() {
 	}
 
 	game := chess.NewGame()
-	prevprev_winning_chance := 0.0
+//	prevprev_winning_chance := 0.0
 	prev_winning_chance := 0.0
 	for game.Outcome() == chess.NoOutcome {
+		num_of_moves := len(game.Moves())
 		if err := engine.Run(uci.CmdPosition{Position: game.Position()}, uci.CmdGo{Depth: 12}); err != nil {
 			panic(err)
 		}
 		search_results := engine.SearchResults()
 		cp := search_results.Info.Score.CP
+		if (num_of_moves % 2 == 1) {
+			cp *= -1
+		}
 		winning_chance := WinningChance(cp)
-		num_of_moves := len(game.Moves())
 		if (num_of_moves > 0) {
-			delta := prevprev_winning_chance - winning_chance
+			delta := prev_winning_chance - winning_chance
 			if (num_of_moves % 2 == 0) {
 				delta *= -1;
 			}
@@ -63,7 +66,7 @@ func main() {
 			}
 			fmt.Printf(" (%0.2f, %0.2f, %0.2f)\n", float64(cp) / 100, winning_chance, -delta)
 		}
-		prevprev_winning_chance = prev_winning_chance
+//		prevprev_winning_chance = prev_winning_chance
 		prev_winning_chance = winning_chance
 //		fmt.Println(game.Position().Board().Draw())
 //		fmt.Println("Score (centipawns):", cp, "Winning chance:", winning_chance, "Best Move: ", search_results.BestMove)
