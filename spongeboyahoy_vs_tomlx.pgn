@@ -1,0 +1,18 @@
+[Event "Casual Blitz game"]
+[Site "https://lichess.org/uRulHisz"]
+[Date "2021.08.06"]
+[White "spongeboy_ahoy"]
+[Black "tomlx"]
+[Result "1-0"]
+[UTCDate "2021.08.06"]
+[UTCTime "19:59:25"]
+[WhiteElo "843"]
+[BlackElo "1229"]
+[Variant "Standard"]
+[TimeControl "300+3"]
+[ECO "C00"]
+[Opening "French Defense: Steinitz Attack"]
+[Termination "Time forfeit"]
+
+1. e4 e6 2. e5 d5 3. exd6 cxd6 4. Nc3 Nc6 5. Bb5 a6 6. Ba4 b5 7. Bb3 d5 8. a4 Bb7 9. axb5 axb5 10. Rxa8 Qxa8 11. Nxb5 Qa5 12. c4 Ba6 13. Nc3 Bxc4 14. Bxc4 dxc4 15. Qg4 Qa1 16. Nge2 Nf6 17. Qxc4 Na7 18. O-O Bd6 19. d3 O-O 20. Be3 Qxb2 21. Na4 Qa3 22. Bc1 Qb4 23. Nd4 Qxc4 24. dxc4 Ng4 25. h3 Ne5 26. Be3 Nxc4 27. Nb3 Rb8 28. Rb1 Nb5 29. Ba7 Rb7 30. Bc5 Bxc5 31. Nbxc5 Rc7 32. Na6 Rc6 33. Nb4 Rb6 34. Nxb6 Nxb6 35. Na6 1-0
+

@@ -5,6 +5,7 @@ import (
 	"github.com/notnil/chess"
 	"github.com/notnil/chess/uci"
 	"math"
+	"os"
 )
 
 // stolen^H^H inspired from lichess https://github.com/ornicar/lila/blob/master/modules/analyse/src/main/Advice.scala#L79
@@ -14,6 +15,17 @@ func WinningChance(cp int) float64 {
 }
 
 func main() {
+	reader, err := os.Open("spongeboyahoy_vs_tomlx.pgn")
+	if err != nil {
+		panic(err)
+	}
+	pgn, err := chess.PGN(reader)
+	if err != nil {
+		panic(err)
+	}
+	spongeboyahoy_vs_tomlx := chess.NewGame(pgn)
+	fmt.Println(spongeboyahoy_vs_tomlx)
+
 	engine, err := uci.New("stockfish")
 	if err != nil {
 		panic(err)
@@ -49,14 +61,16 @@ func main() {
 			} else {
 				fmt.Print("Ok")
 			}
-			fmt.Printf(" (%0.2f)\n", -delta)
+			fmt.Printf(" (%0.2f, %0.2f, %0.2f)\n", float64(cp) / 100, winning_chance, -delta)
 		}
 		prevprev_winning_chance = prev_winning_chance
 		prev_winning_chance = winning_chance
-		fmt.Println(game.Position().Board().Draw())
-		fmt.Println("Score (centipawns):", cp, "Winning chance:", winning_chance, "Best Move: ", search_results.BestMove)
-		fmt.Println("Move: ", search_results.BestMove)
-		if err := game.Move(search_results.BestMove); err != nil {
+//		fmt.Println(game.Position().Board().Draw())
+//		fmt.Println("Score (centipawns):", cp, "Winning chance:", winning_chance, "Best Move: ", search_results.BestMove)
+//		fmt.Println("Move: ", search_results.BestMove)
+		move := spongeboyahoy_vs_tomlx.Moves()[num_of_moves]
+		fmt.Print(num_of_moves / 2 + 1, move, "\t")
+		if err := game.Move(move); err != nil {
 			panic(err)
 		}
 //		for {
