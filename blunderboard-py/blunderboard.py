@@ -1,7 +1,10 @@
 from stockfish import Stockfish
-from playsound import playsound
+from pygame import mixer
+import time
 from pathlib import Path
 import random
+import os
+import RPi.GPIO as GPIO
 
 settings = {
     "Debug Log File": "",
@@ -24,7 +27,7 @@ settings = {
     "UCI_Elo": 1350
 }
 
-sound_path = [Path("sounds/")]
+sound_path = Path("sounds")
 
 
 class BoardReader:
@@ -41,44 +44,71 @@ class BoardReader:
         return ""
 
 
+def play_sound() -> None:
+    """
+    Plays a random sound from the sound path
+    :return: None
+    """
+    mixer.init()
+    mixer.music.load("sounds/" + random.choice(os.listdir(sound_path)))
+    mixer.music.play()
+    while mixer.music.get_busy():
+        time.sleep(0.1)
+
+
 class Game:
     """
     A class representing the game state
     """
 
-    def __init__(self, settings: dict):
-        self.engine = Stockfish("/usr/local/bin/stockfish")
-        self.settings = settings
+    def __init__(self, engine_settings: dict):
+        self.engine = Stockfish("/usr/bin/stockfish")
+        self.settings = engine_settings
         self.engine.update_engine_parameters(self.settings)
         self.matrix = BoardReader()
-        self.current_evaluation = self.engine.get_evaluation()
+        self.current_evaluation = self.engine.get_evaluation()  # This is not necessary, now that I think about it.
         self.evaluations = []
         self.engine.set_position()
 
-        def make_move(move) -> None:
-            """
-            Makes a move on the board and updates the game state
-            :param move:
-            :return: None
-            """
-            if self.engine.is_move_correct(move):
-                self.engine.make_moves_from_current_position([move])
-                self.current_evaluation = self.engine.get_evaluation()
-                self.evaluations.append(self.current_evaluation)
-            if move_was_blunder():
-                # If the played move was a blunder play a random sound from the sound path
-                playsound(random.choice(sound_path))
+    def move_was_blunder(self) -> bool:
+        """
+        Returns true if the last move was a blunder
+        :return: bool
+        """
+        if len(self.evaluations) > 1:  # Don't check for blunders on the first move
+            previous_evaluation = self.evaluations[len(self.evaluations) - 2]
+            return abs(self.current_evaluation["value"] - previous_evaluation["value"]) > 100
+            # TODO This is not a particularly good way to identify a blunder
+        else:
+            return False
 
-        def move_was_blunder() -> bool:
-            """
-            Returns true if the last move was a blunder
-            :return: bool
-            """
-            previous_evaluation = self.evaluations[-1]
-            return self.current_evaluation["value"] < (previous_evaluation["value"] + 3)  # TODO This is not a
-            # particularly good way to identify a blunder
+    def make_move(self, move) -> None:
+        """
+        Makes a move on the board and updates the game state
+        :param move: str
+        :return: None
+        """
+        if self.engine.is_move_correct(move):
+            self.engine.make_moves_from_current_position([move])
+            self.current_evaluation = self.engine.get_evaluation()
+            self.evaluations.append(self.current_evaluation)
+            print(test_game.current_evaluation)
+            if self.move_was_blunder():
+                # If the played move was a blunder play a random sound from the sound path
+                play_sound()
+                print("Blunder!")
+        else:
+            print("Invalid move")
 
     def __str__(self):
         return ""
 
 
+test_game = Game(settings)
+
+moves_manual = ["e2e4", "e7e6", "e4e5", "d7d5", "e5d6", "c7d6", "b1c3", "b8c6", "f1b5", "a7a6", "b5a4", "b7b5", "a4b3",
+                "d6d5", "a2a4", "c8b7", "a4b5", "a6b5", "a1a8", "d8a8", "c3b5", "a8a5", "c2c4", "b7a6", "b5c3", "a6c4",
+                "b3c4", "d5c4", "d1g4", "a5a1"]
+for move in moves_manual:
+    print(move)
+    test_game.make_move(move)
