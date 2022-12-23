@@ -1,4 +1,2 @@
 stockfish
 playsound
-pygobject
-pgn_parser
