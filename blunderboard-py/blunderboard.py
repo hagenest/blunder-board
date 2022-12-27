@@ -4,17 +4,17 @@ import time
 from pathlib import Path
 import random
 import os
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
 settings = {
     "Debug Log File": "",
     "Contempt": 0,
     "Min Split Depth": 0,
-    "Threads": 1,
+    "Threads": 10,
     # More threads will make the engine stronger, but should be kept at less than the number of logical processors on
     # your computer.
     "Ponder": "false",
-    "Hash": 16,
+    "Hash": 8100,
     # Default size is 16 MB. It's recommended that you increase this value, but keep it as some power of 2. E.g.,
     # if you're fine using 2 GB of RAM, set Hash to 2048 (11th power of 2).
     "MultiPV": 1,
@@ -24,7 +24,8 @@ settings = {
     "Slow Mover": 100,
     "UCI_Chess960": "false",
     "UCI_LimitStrength": "false",
-    "UCI_Elo": 1350
+    "UCI_Elo": 1350,
+    "NNUE": "true",
 }
 
 sound_path = Path("sounds")
@@ -68,6 +69,8 @@ class Game:
         self.matrix = BoardReader()
         self.current_evaluation = self.engine.get_evaluation()  # This is not necessary, now that I think about it.
         self.evaluations = []
+        self.current_wdl = self.engine.get_wdl_stats()
+        self.wdls = []
         self.engine.set_position()
 
     def move_was_blunder(self) -> bool:
@@ -75,12 +78,14 @@ class Game:
         Returns true if the last move was a blunder
         :return: bool
         """
-        if len(self.evaluations) > 1:  # Don't check for blunders on the first move
-            previous_evaluation = self.evaluations[len(self.evaluations) - 2]
-            return abs(self.current_evaluation["value"] - previous_evaluation["value"]) > 100
-            # TODO This is not a particularly good way to identify a blunder
-        else:
-            return False
+        if len(self.wdls) > 1:  # Don't check for blunders on the first move
+            previous_wdl = self.wdls[len(self.evaluations) - 2]
+            if abs(previous_wdl[0] - self.current_wdl[0]) > 300:
+                return True
+            elif abs(previous_wdl[2] - self.current_wdl[2]) > 300:
+                return True
+            else:
+                return False
 
     def make_move(self, move) -> None:
         """
@@ -92,10 +97,13 @@ class Game:
             self.engine.make_moves_from_current_position([move])
             self.current_evaluation = self.engine.get_evaluation()
             self.evaluations.append(self.current_evaluation)
-            print(test_game.current_evaluation)
+            self.current_wdl = self.engine.get_wdl_stats()
+            self.wdls.append(self.current_wdl)
+            print(self.current_wdl)
+            print(self.current_evaluation)
             if self.move_was_blunder():
                 # If the played move was a blunder play a random sound from the sound path
-                play_sound()
+                #play_sound()
                 print("Blunder!")
         else:
             print("Invalid move")
