@@ -1,2 +1,6 @@
+from blunderboard.boardreader import BoardReader
+
+
 def main():
-    pass
+    reader = BoardReader()
+    reader.scan()
