@@ -4,7 +4,6 @@ from pygame import mixer
 import random
 from stockfish import Stockfish
 import time
-import movegenerator
 
 settings = {
     "Debug Log File": "",
@@ -53,7 +52,6 @@ class Game:
         self.engine = Stockfish("/usr/bin/stockfish")
         self.settings = engine_settings
         self.engine.update_engine_parameters(self.settings)
-        self.matrix = BoardReader()
         self.current_evaluation = (
             self.engine.get_evaluation()
         )  # This is not necessary, now that I think about it.
