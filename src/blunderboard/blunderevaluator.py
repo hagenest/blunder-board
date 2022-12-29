@@ -3,8 +3,9 @@ from pathlib import Path
 from pygame import mixer
 import random
 from stockfish import Stockfish
+import sys
 
-sound_path = Path("../../sounds")
+sound_path = Path(sys.prefix) / "share" / "blunderboard" / "sounds"
 
 
 class BlunderEvaluator:
