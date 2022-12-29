@@ -32,7 +32,7 @@ class BlunderEvaluator:
     }
 
     def __init__(self, engine_settings: dict = default_engine_settings):
-        self.engine = Stockfish("/usr/bin/stockfish")
+        self.engine = Stockfish()
         self.settings = engine_settings
         self.engine.update_engine_parameters(self.settings)
         self.current_evaluation = (
