@@ -16,7 +16,7 @@ class BlunderEvaluator:
         # More threads will make the engine stronger, but should be kept at less than
         # the number of logical processors on your computer.
         "Ponder": "false",
-        "Hash": 256,
+        "Hash": 16,
         # Default size is 16 MB. It's recommended that you increase this value, but keep
         # it as some power of 2. E.g., if you're fine using 2 GB of RAM, set Hash to
         # 2048 (11th power of 2).
@@ -35,13 +35,13 @@ class BlunderEvaluator:
         self.engine = Stockfish()
         self.settings = engine_settings
         self.engine.update_engine_parameters(self.settings)
+        self.engine.set_position()
         self.current_evaluation = (
             self.engine.get_evaluation()
         )  # This is not necessary, now that I think about it.
         self.evaluations: list[dict] = []
         self.current_wdl = self.engine.get_wdl_stats()
         self.wdls: list[tuple[int, int, int]] = []
-        self.engine.set_position()
 
     def reset(self):
         self.engine.set_position()
