@@ -8,6 +8,8 @@ def main():
     blunder_evaluator = BlunderEvaluator()
     move_generator = MoveGenerator(blunder_evaluator)
     reader = BoardReader(move_generator)
+    reader.scan()
+    reader.print()
     while True:
         reader.scan()
         sleep(0.1)
