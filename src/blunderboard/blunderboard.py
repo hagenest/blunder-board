@@ -28,7 +28,7 @@ settings = {
     "NNUE": "true",
 }
 
-sound_path = Path("sounds")
+sound_path = Path("../../sounds")
 
 
 def play_sound() -> None:
