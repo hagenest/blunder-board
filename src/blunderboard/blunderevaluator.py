@@ -3,38 +3,35 @@ from pathlib import Path
 from pygame import mixer
 import random
 from stockfish import Stockfish
-import time
-import movegenerator
 
 sound_path = Path("../../sounds")
 
 
-settings = { # TODO Move to a config file
-    "Debug Log File": "stocklog.txt",
-    "Contempt": 0,
-    "Min Split Depth": 0,
-    "Threads": 1,
-    # More threads will make the engine stronger, but should be kept at less than the
-    # number of logical processors on your computer.
-    "Ponder": "false",
-    "Hash": 256,
-    # Default size is 16 MB. It's recommended that you increase this value, but keep it
-    # as some power of 2. E.g., if you're fine using 2 GB of RAM, set Hash to 2048
-    # (11th power of 2).
-    "MultiPV": 1,
-    "Skill Level": 20,
-    "Move Overhead": 10,
-    "Minimum Thinking Time": 20,
-    "Slow Mover": 100,
-    "UCI_Chess960": "false",
-    "UCI_LimitStrength": "false",
-    "UCI_Elo": 1350,
-    # "NNUE": "true", # TODO Find out if NNUE can be used with the python wrapper
-}
-
 class BlunderEvaluator:
+    default_engine_settings = {
+        "Debug Log File": "stocklog.txt",
+        "Contempt": 0,
+        "Min Split Depth": 0,
+        "Threads": 1,
+        # More threads will make the engine stronger, but should be kept at less than
+        # the number of logical processors on your computer.
+        "Ponder": "false",
+        "Hash": 256,
+        # Default size is 16 MB. It's recommended that you increase this value, but keep
+        # it as some power of 2. E.g., if you're fine using 2 GB of RAM, set Hash to
+        # 2048 (11th power of 2).
+        "MultiPV": 1,
+        "Skill Level": 20,
+        "Move Overhead": 10,
+        "Minimum Thinking Time": 20,
+        "Slow Mover": 100,
+        "UCI_Chess960": "false",
+        "UCI_LimitStrength": "false",
+        "UCI_Elo": 1350,
+        # "NNUE": "true", # TODO Find out if NNUE can be used with the python wrapper
+    }
 
-    def __init__(self, engine_settings: dict):
+    def __init__(self, engine_settings: dict = default_engine_settings):
         self.engine = Stockfish("/usr/bin/stockfish")
         self.settings = engine_settings
         self.engine.update_engine_parameters(self.settings)
@@ -49,7 +46,7 @@ class BlunderEvaluator:
     def reset(self):
         self.engine.set_position()
 
-    def make_move(self, move) -> None:
+    def move(self, move) -> None:
         """
         Makes a move on the board and updates the game state
         :param move: str
@@ -64,7 +61,8 @@ class BlunderEvaluator:
             print(self.current_wdl)
             print(self.current_evaluation)
             if self.move_was_blunder():
-                # If the played move was a blunder play a random sound from the blunder path
+                # If the played move was a blunder play a random sound from the blunder
+                # path
                 self.play_sound("blunder")
                 print("Blunder!")
         else:
