@@ -17,24 +17,33 @@ class BoardReader:
         gpio.setup(rows, gpio.OUT, initial=gpio.LOW)
         self.columns = columns
         self.rows = rows
+        self.board: list[list[str]] = []
+        for i in range(8):
+            self.board.append([" "] * 8)
 
     def __del__(self):
         gpio.cleanup()
 
     def scan(self) -> None:
-        print("  a b c d e f g h")
-        print(" +---------------+")
         for i, row in enumerate(self.rows):
-            print("%d|" % (i + 1), end="")
             gpio.output(row, gpio.HIGH)
             for j, column in enumerate(self.columns):
                 if gpio.input(column):
-                    print("x", end="")
+                    self.board[i][j] = "x"
                 else:
-                    print(" ", end="")
-                if j == 7:
-                    print("|", end="")
-                else:
-                    print(" ", end="")
+                    self.board[i][j] = " "
             gpio.output(row, gpio.LOW)
-            print("")
+
+    def print(self) -> None:
+        print("  a b c d e f g h")
+        print(" +---------------+")
+        for i, row in reversed(list(enumerate(self.board))):
+            print("%d|" % (i + 1), end="")
+            for j, field in enumerate(row):
+                print(field, end="")
+                if j == 7:
+                    print("|%d" % (i + 1))
+                else:
+                    print(" ", end="")
+        print(" +---------------+")
+        print("  a b c d e f g h")
