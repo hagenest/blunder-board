@@ -1,6 +1,6 @@
 class BlunderEvaluator:
-    def reset(self):
+    def reset(self) -> None:
         pass
 
-    def move(self, move):
+    def move(self, move: str) -> None:
         pass
