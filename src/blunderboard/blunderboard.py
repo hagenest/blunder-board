@@ -4,6 +4,7 @@ from pygame import mixer
 import random
 from stockfish import Stockfish
 import time
+import movegenerator
 
 settings = {
     "Debug Log File": "",
@@ -29,20 +30,6 @@ settings = {
 }
 
 sound_path = Path("sounds")
-
-
-class BoardReader:
-    """
-    A class containing methods to read the board state through the GPIO matrix.
-    """
-
-    def __init__(self):
-        pass
-
-    # TODO WIP
-
-    def get_latest_move(self):
-        return ""
 
 
 def play_sound() -> None:
