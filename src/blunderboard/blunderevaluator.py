@@ -93,7 +93,7 @@ class BlunderEvaluator:
         """
         path = sound_path / move_type
         mixer.init()
-        mixer.music.load("sounds/" + random.choice(os.listdir(path)))
+        mixer.music.load(path / random.choice(os.listdir(path)))
         mixer.music.play()
         # while mixer.music.get_busy():
         #     time.sleep(0.)
