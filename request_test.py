@@ -26,6 +26,7 @@ if response.status_code == 200:
 else:
     print("Error: " + response.json()["error"])
 
+
 def api_wdl() -> str:
     """
     Returns the current wdl from the REST API
