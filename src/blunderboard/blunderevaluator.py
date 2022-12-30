@@ -46,9 +46,11 @@ class BlunderEvaluator:
         self.current_wdl = self.api_wdl()
         self.wdls: list = []
         self.current_fen = self.engine.get_fen_position()
+        self.white_to_move = True
 
     def reset(self):
         self.engine.set_position()
+        self.white_to_move = True
 
     def move(self, move) -> None:
         """
@@ -69,6 +71,10 @@ class BlunderEvaluator:
                 # path
                 self.play_sound("blunder")
                 print("Blunder!")
+        if self.white_to_move:
+            self.white_to_move = False
+        elif not self.white_to_move:
+            self.white_to_move = True
         else:
             print("Invalid move")
             self.play_sound("illegal")
@@ -112,9 +118,7 @@ class BlunderEvaluator:
         """
         if len(self.wdls) > 1:  # Don't check for blunders on the first move
             previous_wdl = self.wdls[len(self.evaluations) - 2]
-            if abs(previous_wdl[0] - self.current_wdl[0]) > 300:
-                return True
-            elif abs(previous_wdl[2] - self.current_wdl[2]) > 300:
+            if abs(previous_wdl[0] - self.current_wdl[2]) > 300:
                 return True
             else:
                 return False
