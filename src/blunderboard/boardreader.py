@@ -3,7 +3,7 @@ import RPi.GPIO as gpio
 
 
 class BoardReader:
-    hysteresis = 10
+    hysteresis = 16
     default_gpio_mode = gpio.BCM
     default_row_gpios = [4, 5, 6, 12, 13, 16, 17, 19]
     default_column_gpios = [20, 21, 22, 23, 24, 25, 26, 27]
@@ -60,39 +60,50 @@ class BoardReader:
                 if gpio.input(column_gpio):
                     next_board[i][j] = "x"
             gpio.output(row_gpio, gpio.LOW)
-        prev_board = self.board_history[-1]
         self.board_history = [next_board] + self.board_history[:-1]
 
-        # if the oldest board is not in inital position but all newer boards are, reset
-        # game state
-        if not self._is_initial_board(prev_board):
-            for board in self.board_history:
+        # if the oldest half of the board history is not in inital position but all
+        # newer boards are, reset game state
+        for board in self.board_history[self.hysteresis // 2 :]:
+            if self._is_initial_board(board):
+                break
+        else:
+            for board in self.board_history[: self.hysteresis // 2]:
                 if not self._is_initial_board(board):
                     break
             else:
                 self.move_generator.reset()
+                self.print()
                 return
 
-        for i, row in enumerate(prev_board):
-            for j, field in enumerate(row):
-                # if the oldest board has a piece but no newer boards have it, the
-                # piece was removed
-                if field == "x":
-                    for board in self.board_history:
+        for i in range(8):
+            for j in range(8):
+                # if the oldest half of the board history has a piece but no newer
+                # boards have it, the piece was removed
+                for board in self.board_history[self.hysteresis // 2 :]:
+                    if board[i][j] == " ":
+                        break
+                else:
+                    for board in self.board_history[: self.hysteresis // 2]:
                         if board[i][j] == "x":
                             break
                     else:
                         self.move_generator.take(i, j)
-        for i, row in enumerate(prev_board):
-            for j, field in enumerate(row):
-                # if the oldest board doesn't have a piece but all newer boards have
-                # it, the piece was placed
-                if field == " ":
-                    for board in self.board_history:
+                        self.print()
+        for i in range(8):
+            for j in range(8):
+                # if the oldest half of the board history doesn't have a piece but all
+                # newer boards have it, the piece was placed
+                for board in self.board_history[self.hysteresis // 2 :]:
+                    if board[i][j] == "x":
+                        break
+                else:
+                    for board in self.board_history[: self.hysteresis // 2]:
                         if board[i][j] == " ":
                             break
                     else:
                         self.move_generator.put(i, j)
+                        self.print()
 
     def _print(self, board) -> None:
         print("  a b c d e f g h")
