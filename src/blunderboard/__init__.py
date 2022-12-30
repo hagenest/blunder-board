@@ -18,7 +18,3 @@ def main_content():
 
 def main():
     cProfile.run("main_content()")
-
-
-# run main with cProfile
-cProfile.run("main()")
