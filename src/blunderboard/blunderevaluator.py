@@ -43,7 +43,7 @@ class BlunderEvaluator:
         self.engine.set_position()
         self.current_evaluation = self.api_evaluation()
         self.evaluations: list[dict] = []
-        self.current_wdl = self.engine.get_wdl_stats()
+        self.current_wdl = self.api_wdl()
         self.wdls: list = []
         self.current_fen = self.engine.get_fen_position()
 
