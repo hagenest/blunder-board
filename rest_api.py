@@ -27,7 +27,7 @@ default_engine_settings = {
     "UCI_LimitStrength": "false",
     "UCI_Elo": 1350,
     # "NNUE": "true", # TODO Find out if NNUE can be used with the python wrapper
-    }
+}
 
 # Create a Stockfish chess engine instance
 engine = Stockfish(path="/usr/bin/stockfish")
@@ -35,19 +35,20 @@ engine = Stockfish(path="/usr/bin/stockfish")
 # Set the engine settings
 engine.update_engine_parameters(default_engine_settings)
 
-@app.route('/api/get_evaluation', methods=['POST'])
+
+@app.route("/api/get_evaluation", methods=["POST"])
 def get_evaluation():
     # Get the API token from the request header
-    token = request.headers.get('Authorization')
+    token = request.headers.get("Authorization")
 
     # If the API token is not provided or is invalid, return an error
     if token != API_TOKEN:
-        return jsonify({'error': 'Invalid API token'}), 401
+        return jsonify({"error": "Invalid API token"}), 401
 
     # Get the current chess position and the desired depth from the request body
     data = request.get_json()
-    position = data.get('position')
-    depth = data.get('depth')
+    position = data.get("position")
+    depth = data.get("depth")
 
     # Set the position and search depth in the chess engine
     engine.set_fen_position(position)
@@ -59,7 +60,6 @@ def get_evaluation():
     # Return the evaluation to the client
     return evaluation
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(host="")
-
-

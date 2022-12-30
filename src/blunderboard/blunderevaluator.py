@@ -4,8 +4,12 @@ from pygame import mixer
 import random
 from stockfish import Stockfish
 import sys
+import requests
 
+API_TOKEN = "blunderboard-security-token"
 sound_path = Path(sys.prefix) / "share" / "blunderboard" / "sounds"
+api = "http://5.75.138.151:5000/api/get_evaluation"
+wdl_api = "http://5.75.138.151:5000/api/get_wdl"
 
 
 class BlunderEvaluator:
@@ -37,12 +41,11 @@ class BlunderEvaluator:
         self.settings = engine_settings
         self.engine.update_engine_parameters(self.settings)
         self.engine.set_position()
-        self.current_evaluation = (
-            self.engine.get_evaluation()
-        )  # This is not necessary, now that I think about it.
+        self.current_evaluation = self.api_evaluation()
         self.evaluations: list[dict] = []
         self.current_wdl = self.engine.get_wdl_stats()
-        self.wdls: list[tuple[int, int, int]] = []
+        self.wdls: list = []
+        self.current_fen = self.engine.get_fen_position()
 
     def reset(self):
         self.engine.set_position()
@@ -57,7 +60,7 @@ class BlunderEvaluator:
             self.engine.make_moves_from_current_position([move])
             self.current_evaluation = self.engine.get_evaluation()
             self.evaluations.append(self.current_evaluation)
-            self.current_wdl = self.engine.get_wdl_stats()
+            self.current_wdl = self.api_wdl()
             self.wdls.append(self.current_wdl)
             print(self.current_wdl)
             print(self.current_evaluation)
@@ -69,6 +72,38 @@ class BlunderEvaluator:
         else:
             print("Invalid move")
             self.play_sound("illegal")
+
+    def api_evaluation(self) -> dict:
+        """
+        Returns the current evaluation from the REST API
+        :return: str
+        """
+        data = {"position": self.engine.get_fen_position(), "depth": 20}
+        # Set the API token in the request header
+        headers = {"Authorization": API_TOKEN}
+        # Send a POST request to the API endpoint
+        response = requests.post(api, json=data, headers=headers)
+        if response.status_code == 200:
+            return response.json()["value"]
+        else:
+            print("API Error: " + response.json()["error"])
+            return {"NOPE": "PLEASE CRASH"}
+
+    def api_wdl(self) -> str:
+        """
+        Returns the current wdl from the REST API
+        :return: str
+        """
+        data = {"position": self.engine.get_fen_position(), "depth": 20}
+        # Set the API token in the request header
+        headers = {"Authorization": API_TOKEN}
+        # Send a POST request to the API endpoint
+        response = requests.post(wdl_api, json=data, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print("API Error: " + response.json()["error"])
+            return "API Error"
 
     def move_was_blunder(self) -> bool:
         """
