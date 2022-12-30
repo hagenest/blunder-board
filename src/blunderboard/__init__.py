@@ -17,4 +17,4 @@ def main_content():
 
 
 def main():
-    cProfile.run("main_content()")
+    cProfile.runctx("main_content()", globals(), locals(), filename=__file__)
