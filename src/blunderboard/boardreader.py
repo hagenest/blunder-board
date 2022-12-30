@@ -3,7 +3,7 @@ import RPi.GPIO as gpio
 
 
 class BoardReader:
-    hysteresis = 16
+    hysteresis = 8
     default_gpio_mode = gpio.BCM
     default_row_gpios = [4, 5, 6, 12, 13, 16, 17, 19]
     default_column_gpios = [20, 21, 22, 23, 24, 25, 26, 27]
@@ -72,8 +72,8 @@ class BoardReader:
                 if not self._is_initial_board(board):
                     break
             else:
-                self.move_generator.reset()
                 self.print()
+                self.move_generator.reset()
                 return
 
         for i in range(8):
@@ -88,8 +88,8 @@ class BoardReader:
                         if board[i][j] == "x":
                             break
                     else:
-                        self.move_generator.take(i, j)
                         self.print()
+                        self.move_generator.take(i, j)
         for i in range(8):
             for j in range(8):
                 # if the oldest half of the board history doesn't have a piece but all
@@ -102,8 +102,8 @@ class BoardReader:
                         if board[i][j] == " ":
                             break
                     else:
-                        self.move_generator.put(i, j)
                         self.print()
+                        self.move_generator.put(i, j)
 
     def _print(self, board) -> None:
         print("  a b c d e f g h")
