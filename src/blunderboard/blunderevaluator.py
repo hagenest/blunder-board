@@ -58,7 +58,7 @@ class BlunderEvaluator:
         """
         if self.engine.is_move_correct(move):
             self.engine.make_moves_from_current_position([move])
-            self.current_evaluation = self.engine.get_evaluation()
+            self.current_evaluation = self.api_evaluation()
             self.evaluations.append(self.current_evaluation)
             self.current_wdl = self.api_wdl()
             self.wdls.append(self.current_wdl)
