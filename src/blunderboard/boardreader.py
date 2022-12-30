@@ -22,7 +22,7 @@ class BoardReader:
         self.row_gpios = row_gpios
         self.board_history: list[list[list[str]]] = []
         for _ in range(self.hysteresis):
-            self.board_history.append(self._empty_board())
+            self.board_history.append(self._initial_board())
         self.move_generator = move_generator
 
     def __del__(self):
