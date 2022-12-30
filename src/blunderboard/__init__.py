@@ -12,4 +12,4 @@ def main():
     reader.print()
     while True:
         reader.scan()
-        sleep(1)
+        sleep(0.1)
