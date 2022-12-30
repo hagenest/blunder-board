@@ -66,15 +66,16 @@ class BlunderEvaluator:
             self.wdls.append(self.current_wdl)
             print(self.current_wdl)
             print(self.current_evaluation)
+            print(self.get_board())
             if self.move_was_blunder():
                 # If the played move was a blunder play a random sound from the blunder
                 # path
                 self.play_sound("blunder")
                 print("Blunder!")
-        if self.white_to_move:
-            self.white_to_move = False
-        elif not self.white_to_move:
-            self.white_to_move = True
+            if self.white_to_move:
+                self.white_to_move = False
+            elif not self.white_to_move:
+                self.white_to_move = True
         else:
             print("Invalid move")
             self.play_sound("illegal")
